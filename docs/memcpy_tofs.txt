@@ -1,0 +1,124 @@
+MEMCPY_TOFS(9)        Kernel Reference Guide       MEMCPY_TOFS(9)
+
+NAME
+       get_user_byte,  get_fs_byte,  get_user_word,  get_fs_word,
+       get_user_long,  get_fs_long,  put_user_byte,  put_fs_byte,
+       put_user_word,  put_fs_word,  put_user_long,  put_fs_long,
+       __generic_memcpy_tofs,             __constant_memcpy_tofs,
+       __generic_memcpy_fromfs,   __constant_memcpy_fromfs,  mem-
+       cpy_fromfs, memcpy_tofs - copy data from or to user space.
+
+SYNOPSIS
+       #include <asm/segment.h>
+
+       static inline unsigned char get_user_byte(const char * addr);
+       static inline unsigned char get_fs_byte(const char *addr);
+
+       static inline unsigned short get_user_word(const short *addr);
+       static inline unsigned short get_fs_word(const short *addr);
+
+       static inline unsigned long get_user_long(const int *addr);
+       static inline unsigned long get_fs_long(const int *addr);
+
+       static inline void put_user_byte(char val,char *addr);
+       static inline void put_fs_byte(char val,char *addr);
+
+       static inline void put_user_word(short val,short * addr);
+       static inline void put_fs_word(short val,short * addr)
+
+       static inline void put_user_long(unsigned long val,int * addr);
+       static inline void put_fs_long(unsigned long val,int * addr);
+
+       static inline void __generic_memcpy_tofs(void * dest,
+                                               const void * src,
+                                               unsigned long n);
+
+       static inline void __constant_memcpy_tofs(void * dest,
+                                                const void * src,
+                                                unsigned long n);
+
+       static inline void __generic_memcpy_fromfs(void * dest,
+                                                 const void * src,
+                                                 unsigned long n);
+
+       static inline void __constant_memcpy_fromfs(void * dest,
+                                                   const void * src,
+                                                   unsigned long n);
+
+       static inline void memcpy_fromfs(void * dest, const void * src,
+                                      unsigned long n);
+
+       static inline void memcpy_tofs(void * dest,const void * src,
+                                      unsigned long n);
+
+DESCRIPTION
+       These  are the architecture dependent functions for inter-
+       change of data between user and kernel space. For non seg-
+       mented  architectures like alpha, these are normal memcopy
+       operations, for i386 these are inline assembler  functions
+       for  copying between different segments.  The name is from
+       the fs register of the i386,  which  is  used  as  segment
+       descriptor for the user segment.
+
+       get_{user,fs}_{byte,word,long}()
+              returns  one  byte, word or long, from addr in user
+              space to kernel space.
+
+       put_{user,fs}_{byte,word,long}()
+              copies val from kernel space to addr in user space.
+
+       __generic_memcpy_tofs()
+              copies  n bytes from src in kernel space to dest in
+              user space.  This function is used from memcpy_tofs
+              when  n is not a constant.  This function is is not
+              available on all architectures.
+
+       __constant_memcpy_tofs()
+              copies n bytes from src in kernel space to dest  in
+              user space.  This function is used from memcpy_tofs
+              when n is a constant which can  be  deterimined  at
+              compile  time.   This  function is not available on
+              all architectures.
+
+       __generic_memcpy_fromfs()
+              copies n bytes from src in user space  to  dest  in
+              kernel  space.   This  function  is  used from mem-
+              cpy_tofs  when n is not a constant.  This  function
+              is not available on all architectures.
+
+       __constant_memcpy_fromfs()
+              copies  n  bytes  from src in user space to dest in
+              kernel space.  This  function  is  used  from  mem-
+              cpy_tofs   when n is a constant which can be deter-
+              imined at  compile  time.   This  function  is  not
+              available on all architectures.
+
+       memcpy_fromfs()
+              copies  n  bytes  from src in user space to dest in
+              kernel space.  On i386 it is determined at  compile
+              time   if  n  is  a  constant  with  __builtin_con-
+              stant_p(n) from gcc. If n is a constant then __con-
+              stant_memcpy_fromfs()  is used, else __generic_mem-
+              cpy_fromfs() is used.
+
+       memcpy_tofs()
+              copies n bytes from src in kernel space to dest  in
+              user  space.   On  i386 it is determined at compile
+              time  if  n  is  a  constant  with   __builtin_con-
+              stant_p(n) from gcc. If n is a constant then __con-
+              stant_memcpy_tofs() is  used,  else  __generic_mem-
+              cpy_tofs() is used.
+
+SOURCES
+       linux/include/asm/segment.h
+
+SEE ALSO
+       verify_area(9) for checking read/write permissions to/from
+       user space.
+
+AUTHOR
+       Linus Torvalds
+
+Linux 1.2.12               AUGUST 1995                          1
+
+
